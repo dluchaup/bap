@@ -60,6 +60,7 @@ module Build(G : Graph.Builder.S
              with type G.E.t = Block.t * edge * Block.t
               and type G.V.t = Block.t) = struct
   let to_graph ?bound entry =
+    let empty_vis = Vis.create () in
     let vis = Vis.create () in
     let rec build gr (src : Block.t) =
       if skip bound vis src then gr
@@ -69,7 +70,7 @@ module Build(G : Graph.Builder.S
               Hash_set.add vis (Block.addr src);
               match dest with
               | `Unresolved _ -> gr
-              | `Block (dst,_) when skip bound vis dst -> gr
+              | `Block (dst,_) when skip bound empty_vis dst -> gr
               | `Block (dst,kind) ->
                 let edge = Cfg.E.create src kind dst in
                 let gr = G.add_edge_e gr edge in
